@@ -20,9 +20,9 @@ AND scar IS NOT NULL;
 ```
 Y me da tres personas que coinciden con esa descripcion
 
-*3	Frankie Lombardi	trench coat	left cheek* 
-*183	Vincent Malone	trench coat	left cheek*
-*237	Christopher Black	trench coat	right cheek*
+- *3	Frankie Lombardi	trench coat	left cheek* 
+- *183	Vincent Malone	trench coat	left cheek*
+- *237	Christopher Black	trench coat	right cheek*
 
 ## Paso 3
 
