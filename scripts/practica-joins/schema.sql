@@ -1,0 +1,9 @@
+DROP TABLE IF EXISTS users;
+CREATE TABLE users(
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name TEXT UNIQUE NOT NULL,
+    password TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    age INTEGER CHECK(age >= 18),
+    salary REAL
+);
