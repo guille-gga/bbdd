@@ -7,6 +7,8 @@ CARPETA DE [TAREAS](https://github.com/guille-gga/bbdd/tree/main/tareas):
 - [SQLBolt](https://github.com/guille-gga/bbdd/tree/main/tareas/sqlbolt)
 - [3-DQL](https://github.com/guille-gga/bbdd/tree/main/tareas/3-dql)
 
+CARPETA DE [SCRIPTS](https://github.com/guille-gga/bbdd/tree/main/scripts)
+- Práctica [JOINS](https://github.com/guille-gga/bbdd/tree/main/scripts/practica-joins)
 **Examenes:**
 - ExamenCSV
 - [ExamenMonotabla](https://github.com/guille-gga/bbdd/tree/main/tareas/examen-monotabla)
