@@ -9,6 +9,7 @@ CARPETA DE [TAREAS](https://github.com/guille-gga/bbdd/tree/main/tareas):
 
 CARPETA DE [SCRIPTS](https://github.com/guille-gga/bbdd/tree/main/scripts)
 - Práctica [JOINS](https://github.com/guille-gga/bbdd/tree/main/scripts/practica-joins)
+
 **Examenes:**
 - ExamenCSV
 - [ExamenMonotabla](https://github.com/guille-gga/bbdd/tree/main/tareas/examen-monotabla)
