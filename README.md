@@ -1,6 +1,7 @@
 # bbdd
 *Nuevo repo*
-Aqui subiré todos mis temas hechos en la asignatura base de datos:
+Este repositorio recopila los temas y ejercicios realizados en la asignatura Base de Datos (1DAM). 
+Profesor: Diego
 
 CARPETA DE [TAREAS](https://github.com/guille-gga/bbdd/tree/main/tareas):
 - [SQLNoir](https://github.com/guille-gga/bbdd/tree/main/tareas/sql-noir)
