@@ -1,6 +1,8 @@
 # bbdd
 *Nuevo repo*
+
 Este repositorio recopila los temas y ejercicios realizados en la asignatura Base de Datos (1DAM). 
+
 Profesor: Diego
 
 CARPETA DE [TAREAS](https://github.com/guille-gga/bbdd/tree/main/tareas):
