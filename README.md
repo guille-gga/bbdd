@@ -10,6 +10,7 @@ CARPETA DE [TAREAS](https://github.com/guille-gga/bbdd/tree/main/tareas):
 - [SQLBolt](https://github.com/guille-gga/bbdd/tree/main/tareas/sqlbolt)
 - [3-DQL](https://github.com/guille-gga/bbdd/tree/main/tareas/3-dql)
 - [4-movies](https://github.com/guille-gga/bbdd/tree/main/tareas/4-movies)
+- Practica [Servidor Express](https://github.com/guille-gga/bbdd/tree/main/tareas/Servidor-express) realizada en clase.
 
 CARPETA DE [SCRIPTS](https://github.com/guille-gga/bbdd/tree/main/scripts)
 - Práctica [JOINS](https://github.com/guille-gga/bbdd/tree/main/scripts/practica-joins)
