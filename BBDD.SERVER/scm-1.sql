@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS generos;
 DROP TABLE IF EXISTS libros;
 DROP TABLE IF EXISTS libros_autores;
 DROP TABLE IF EXISTS libros_generos;
-DROP TABLE IF EXISTS reseñas;
+DROP TABLE IF EXISTS resenas;
 DROP TABLE IF EXISTS usuarios;
 
 CREATE TABLE autores (
@@ -30,13 +30,13 @@ CREATE TABLE usuarios (
     email TEXT NOT NULL UNIQUE
 );
 
-CREATE TABLE reseñas (
+CREATE TABLE resenas (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     usuario_id INTEGER NOT NULL REFERENCES usuarios (id),
     libro_id INTEGER NOT NULL REFERENCES libros (id),
     puntuacion INTEGER CHECK (puntuacion BETWEEN 1 AND 5),
-    comentario TEXT,
-    fecha_reseña DATETIME DEFAULT CURRENT_TIMESTAMP
+    
+  
 );
 
 
