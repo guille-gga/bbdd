@@ -1,4 +1,4 @@
-# bbdd
+# BBDD
 *Nuevo repo*
 
 Este repositorio recopila los temas y ejercicios realizados en la asignatura Base de Datos (1DAM). 
