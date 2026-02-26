@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SampSave - Audio Library & Versioning</title>
+    <title>SampSave - Historial de Versiones</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root {
@@ -41,7 +41,7 @@
         section { width: 90%; max-width: 600px; padding: 20px 0; display: none; }
         .active { display: block; }
 
-        /* HERO & BUTTONS */
+        /* HERO */
         .hero-box { text-align: center; line-height: 1.6; }
         .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
         button { padding: 12px; border-radius: 5px; border: none; background: #333; color: white; cursor: pointer; font-weight: bold; }
@@ -58,34 +58,31 @@
             border-left: 4px solid var(--accent);
         }
 
-        /* UPLOAD AREA */
+        /* FORMULARIO */
         .upload-area { border: 2px dashed #444; padding: 40px; text-align: center; border-radius: 10px; margin-bottom: 20px; cursor: pointer; }
         input[type="text"] { width: 100%; padding: 12px; background: #222; border: 1px solid #444; color: white; box-sizing: border-box; border-radius: 5px; margin-bottom: 10px; }
         #btn-guardar { width: 100%; background: #444; color: #888; cursor: not-allowed; }
         #btn-guardar.ready { background: var(--accent); color: white; cursor: pointer; }
 
-        /* PLAYER & VERSIONS */
-        .audio-player-container { background: #282828; padding: 20px; border-radius: 10px; margin: 10px 0; }
+        /* REPRODUCTOR Y VERSIONES */
+        .audio-player-box { background: #282828; padding: 20px; border-radius: 10px; margin: 10px 0; }
         audio { width: 100%; filter: invert(100%) hue-rotate(180deg); }
         
-        .history-section { margin-top: 25px; border-top: 1px solid #333; padding-top: 15px; }
-        .history-item {
+        .history-list { margin-top: 20px; border-top: 1px solid #333; padding-top: 15px; }
+        .version-item {
             background: #1a1a1a;
-            padding: 10px;
+            padding: 12px;
             margin-top: 8px;
-            border-radius: 5px;
+            border-radius: 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            font-size: 0.9rem;
+            border: 1px solid #333;
         }
 
-        .version-badge { background: var(--accent); color: black; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 0.7rem; }
+        .tag { background: var(--accent); color: black; padding: 2px 6px; border-radius: 4px; font-weight: bold; font-size: 0.7rem; }
+        .action-btns { display: flex; gap: 10px; margin-top: 15px; }
         
-        .action-bar { display: flex; gap: 8px; margin-top: 15px; }
-        .btn-update { background: var(--blue); flex: 2; }
-        .btn-delete { background: var(--danger); flex: 0.5; }
-
         textarea { width: 100%; height: 100px; background: #1a1a1a; color: #ccc; padding: 10px; border: 1px solid #333; margin-top: 10px; border-radius: 5px; resize: none; }
     </style>
 </head>
@@ -93,23 +90,23 @@
 
     <nav id="top-nav">
         <i class="fas fa-home" onclick="navTo('home')"></i>
-        <i class="fas fa-plus" onclick="initNewProject()"></i>
+        <i class="fas fa-plus" onclick="prepareNewProject()"></i>
         <i class="fas fa-book" onclick="navTo('library')"></i>
     </nav>
 
     <section id="home" class="active">
         <div class="hero-box">
             <h1>SampSave</h1>
-            <p>Almacena tus maquetas y mantén un historial de versiones de cada pista. No pierdas nunca una idea anterior.</p>
+            <p>Tu estudio de bolsillo. Sube, compara y organiza versiones de tus canciones.</p>
             <div class="btn-grid">
-                <button onclick="navTo('library')">VER LIBRERÍA</button>
-                <button onclick="initNewProject()" style="background: var(--accent)">NUEVO PROYECTO</button>
+                <button onclick="navTo('library')">LIBRERÍA</button>
+                <button onclick="prepareNewProject()" style="background: var(--accent)">NUEVO TRACK</button>
             </div>
         </div>
     </section>
 
     <section id="library">
-        <h2>TU LIBRERÍA</h2>
+        <h2>MIS PROYECTOS</h2>
         <div id="project-list"></div>
     </section>
 
@@ -119,15 +116,14 @@
             <h2 id="upload-title">Nuevo Proyecto</h2>
         </div>
         <div class="upload-area" onclick="document.getElementById('file-input').click()">
-            <i class="fas fa-cloud-upload-alt" style="font-size: 40px; color: var(--blue);"></i>
-            <p id="file-status">Seleccionar archivo WAV/MP3</p>
+            <i class="fas fa-file-upload" style="font-size: 40px; color: var(--blue);"></i>
+            <p id="file-status">Click para seleccionar audio</p>
             <input type="file" id="file-input" hidden accept=".mp3,.wav" onchange="checkFile()">
         </div>
-        <div id="meta-fields">
-            <input type="text" id="proj-name" placeholder="Nombre del proyecto">
-            <input type="text" id="proj-version" placeholder="Versión (ej: V1, Master, Rough)">
-        </div>
-        <button id="btn-guardar" disabled onclick="handleSave()">Guardar Cambios</button>
+        <input type="text" id="proj-name" placeholder="Nombre de la canción">
+        <input type="text" id="proj-version" placeholder="Nombre de esta versión (Ej: V1, Rough Mix, Master)">
+        
+        <button id="btn-guardar" disabled onclick="saveData()">GUARDAR</button>
     </section>
 
     <section id="project-details">
@@ -136,39 +132,38 @@
             <h2 id="detail-title">Proyecto</h2>
         </div>
 
-        <div class="audio-player-container">
-            <div style="margin-bottom:10px; display:flex; justify-content:space-between;">
-                <span id="detail-version-tag" class="version-badge">VERSION ACTUAL</span>
-                <small id="detail-filename" style="color:var(--text-dim)"></small>
+        <div class="audio-player-box">
+            <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                <span id="current-ver-name" class="tag">VERSIÓN ACTUAL</span>
+                <small id="current-file-info" style="color:var(--text-dim)"></small>
             </div>
-            <audio id="main-player" controls></audio>
+            <audio id="player" controls></audio>
         </div>
 
-        <div class="action-bar">
-            <button class="btn-update" onclick="prepareUpdate()">
-                <i class="fas fa-sync-alt"></i> ACTUALIZAR AUDIO (NUEVA VERSIÓN)
+        <div class="action-btns">
+            <button onclick="prepareUpdate()" style="background: var(--blue); flex: 2;">
+                <i class="fas fa-plus"></i> NUEVA VERSIÓN (SOBREESCRIBIR)
             </button>
-            <button id="btn-main-download" class="btn-update" style="background:#444">
+            <button id="main-download" style="background: #444;">
                 <i class="fas fa-download"></i>
             </button>
-            <button class="btn-delete" onclick="deleteProject()">
+            <button onclick="deleteProject()" style="background: var(--danger);">
                 <i class="fas fa-trash"></i>
             </button>
         </div>
 
-        <textarea id="detail-notes" placeholder="Notas de producción o letras..."></textarea>
+        <textarea id="proj-notes" placeholder="Notas sobre la mezcla, BPM, letras..."></textarea>
 
-        <div class="history-section">
-            <h3>Historial de versiones</h3>
-            <div id="version-history-list">
-                </div>
+        <div class="history-list">
+            <h3>Versiones anteriores</h3>
+            <div id="history-container"></div>
         </div>
     </section>
 
     <script>
         let db = []; 
-        let currentProjectIndex = null;
-        let isUpdating = false;
+        let currentIdx = null;
+        let mode = 'new'; // 'new' o 'update'
 
         function navTo(id) {
             document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
@@ -177,22 +172,24 @@
             if(id === 'library') renderLibrary();
         }
 
-        function initNewProject() {
-            isUpdating = false;
+        function prepareNewProject() {
+            mode = 'new';
             document.getElementById('upload-title').innerText = "Nuevo Proyecto";
             document.getElementById('proj-name').style.display = "block";
             document.getElementById('proj-name').value = "";
             document.getElementById('proj-version').value = "";
-            document.getElementById('file-status').innerText = "Seleccionar archivo WAV/MP3";
+            document.getElementById('file-input').value = "";
+            document.getElementById('file-status').innerText = "Click para seleccionar audio";
             navTo('add-audio');
         }
 
         function prepareUpdate() {
-            isUpdating = true;
-            document.getElementById('upload-title').innerText = "Actualizar Versión";
-            document.getElementById('proj-name').style.display = "none"; // No cambiamos el nombre al actualizar
+            mode = 'update';
+            document.getElementById('upload-title').innerText = "Subir Nueva Versión";
+            document.getElementById('proj-name').style.display = "none"; 
             document.getElementById('proj-version').value = "";
-            document.getElementById('file-status').innerText = "Seleccionar el nuevo archivo";
+            document.getElementById('file-input').value = "";
+            document.getElementById('file-status').innerText = "Selecciona el nuevo archivo";
             navTo('add-audio');
         }
 
@@ -200,98 +197,99 @@
             const file = document.getElementById('file-input').files[0];
             const btn = document.getElementById('btn-guardar');
             if(file) {
-                document.getElementById('file-status').innerText = "Listo: " + file.name;
+                document.getElementById('file-status').innerText = "Archivo: " + file.name;
                 btn.disabled = false;
                 btn.classList.add('ready');
             }
         }
 
-        function handleSave() {
+        function saveData() {
             const fileInput = document.getElementById('file-input');
-            const verInput = document.getElementById('proj-version');
             const nameInput = document.getElementById('proj-name');
+            const verInput = document.getElementById('proj-version');
 
-            if(!fileInput.files[0] || !verInput.value) return alert("Falta archivo o versión");
+            if(!fileInput.files[0] || !verInput.value) return alert("Rellena los datos");
 
-            const fileData = {
-                name: fileInput.files[0].name,
-                version: verInput.value,
+            const newFile = {
+                vName: verInput.value,
+                fName: fileInput.files[0].name,
                 url: URL.createObjectURL(fileInput.files[0]),
                 date: new Date().toLocaleDateString()
             };
 
-            if(isUpdating) {
-                // Movemos la versión actual al historial antes de cambiarla
-                const p = db[currentProjectIndex];
-                p.history.unshift({...p.current}); 
-                p.current = fileData;
-            } else {
-                // Nuevo proyecto
+            if(mode === 'new') {
                 db.push({
-                    name: nameInput.value || "Sin nombre",
-                    current: fileData,
+                    name: nameInput.value || "Sin título",
+                    current: newFile,
                     history: [],
                     notes: ""
                 });
+            } else {
+                // Al actualizar, el "current" actual pasa al historial
+                db[currentIdx].history.unshift({...db[currentIdx].current});
+                db[currentIdx].current = newFile;
             }
             navTo('library');
         }
 
         function renderLibrary() {
-            const container = document.getElementById('project-list');
+            const list = document.getElementById('project-list');
             if(db.length === 0) {
-                container.innerHTML = `<p style="text-align:center; color:gray; margin-top:20px;">Librería vacía</p>`;
+                list.innerHTML = `<p style="text-align:center; color:gray; margin-top:30px;">No hay proyectos todavía.</p>`;
                 return;
             }
-            container.innerHTML = db.map((p, i) => `
+            list.innerHTML = db.map((p, i) => `
                 <div class="project-card">
-                    <div>
-                        <strong>${p.name}</strong><br>
-                        <small style="color:var(--accent)">Actual: ${p.current.version}</small>
-                    </div>
+                    <div><strong>${p.name}</strong><br><small>${p.current.vName}</small></div>
                     <button onclick="openProject(${i})" style="background:var(--accent); color:black">ABRIR</button>
                 </div>
             `).join('');
         }
 
-        function openProject(index) {
-            currentProjectIndex = index;
-            const p = db[index];
-            const player = document.getElementById('main-player');
+        function openProject(i) {
+            currentIdx = i;
+            const p = db[i];
+            const player = document.getElementById('player');
             
             document.getElementById('detail-title').innerText = p.name;
-            document.getElementById('detail-version-tag').innerText = p.current.version;
-            document.getElementById('detail-filename').innerText = p.current.name;
-            document.getElementById('detail-notes').value = p.notes;
+            document.getElementById('current-ver-name').innerText = p.current.vName;
+            document.getElementById('current-file-info').innerText = p.current.fName;
+            document.getElementById('proj-notes').value = p.notes;
             player.src = p.current.url;
 
-            document.getElementById('btn-main-download').onclick = () => download(p.current.url, p.current.name);
+            document.getElementById('main-download').onclick = () => download(p.current.url, p.current.fName);
 
             renderHistory(p.history);
             navTo('project-details');
         }
 
         function renderHistory(history) {
-            const container = document.getElementById('version-history-list');
+            const container = document.getElementById('history-container');
             if(history.length === 0) {
-                container.innerHTML = `<p style="color:gray; font-size:0.8rem;">No hay versiones anteriores</p>`;
+                container.innerHTML = `<p style="color:gray; font-size:0.8rem;">No hay versiones anteriores.</p>`;
                 return;
             }
             container.innerHTML = history.map(h => `
-                <div class="history-item">
-                    <span><strong>${h.version}</strong> - ${h.name}</span>
+                <div class="version-item">
+                    <span><strong>${h.vName}</strong><br><small style="color:gray">${h.fName}</small></span>
                     <div>
-                        <i class="fas fa-play" style="cursor:pointer; margin-right:15px;" onclick="previewHistory('${h.url}')"></i>
-                        <i class="fas fa-download" style="cursor:pointer;" onclick="download('${h.url}', '${h.name}')"></i>
+                        <button onclick="playSource('${h.url}', '${h.vName}')" style="background:#444; margin-right:5px;">
+                            <i class="fas fa-play"></i>
+                        </button>
+                        <button onclick="download('${h.url}', '${h.fName}')" style="background:#444;">
+                            <i class="fas fa-download"></i>
+                        </button>
                     </div>
                 </div>
             `).join('');
         }
 
-        function previewHistory(url) {
-            const player = document.getElementById('main-player');
+        function playSource(url, name) {
+            const player = document.getElementById('player');
             player.src = url;
             player.play();
+            // Avisar al usuario qué está escuchando
+            document.getElementById('current-ver-name').innerText = name + " (Antigua)";
         }
 
         function download(url, filename) {
@@ -302,14 +300,15 @@
         }
 
         function deleteProject() {
-            if(confirm("¿Borrar todo el proyecto y su historial?")) {
-                db.splice(currentProjectIndex, 1);
+            if(confirm("¿Eliminar este proyecto y todo su historial?")) {
+                db.splice(currentIdx, 1);
                 navTo('library');
             }
         }
 
-        document.getElementById('detail-notes').addEventListener('input', (e) => {
-            db[currentProjectIndex].notes = e.target.value;
+        // Auto-guardado de notas
+        document.getElementById('proj-notes').addEventListener('input', (e) => {
+            db[currentIdx].notes = e.target.value;
         });
     </script>
 </body>
