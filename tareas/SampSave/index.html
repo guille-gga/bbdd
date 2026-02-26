@@ -12,6 +12,7 @@
             --accent: #2ecc71;
             --text-main: #ffffff;
             --text-dim: #b3b3b3;
+            --danger: #e74c3c;
         }
 
         body {
@@ -48,7 +49,7 @@
             width: 90%;
             max-width: 600px;
             padding: 20px 0;
-            display: none; /* Oculto por defecto */
+            display: none; 
         }
 
         .active { display: block; }
@@ -81,7 +82,11 @@
             background: #333;
             color: white;
             cursor: pointer;
+            font-weight: bold;
+            transition: 0.2s;
         }
+
+        button:hover { opacity: 0.8; }
 
         /* LIBRERÍA */
         .empty-state {
@@ -116,18 +121,18 @@
 
         input[type="text"] {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             background: #222;
             border: 1px solid #444;
             color: white;
             box-sizing: border-box;
+            border-radius: 5px;
         }
 
         #btn-guardar {
             width: 100%;
             background: #444;
             color: #888;
-            font-weight: bold;
             cursor: not-allowed;
         }
 
@@ -145,21 +150,40 @@
             margin-bottom: 20px;
         }
 
-        .audio-player {
+        .audio-player-container {
             background: #282828;
-            padding: 15px;
-            border-radius: 5px;
+            padding: 20px;
+            border-radius: 10px;
             margin: 10px 0;
+            border: 1px solid #444;
         }
+
+        audio {
+            width: 100%;
+            height: 40px;
+            filter: invert(100%) hue-rotate(180deg) brightness(1.5); /* Estilo dark para el player */
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-download { background: #3498db; flex: 1; }
+        .btn-delete { background: var(--danger); }
 
         textarea {
             width: 100%;
-            height: 150px;
+            height: 120px;
             background: #1a1a1a;
             color: #ccc;
             padding: 10px;
             border: 1px solid #333;
             box-sizing: border-box;
+            margin-top: 10px;
+            border-radius: 5px;
+            resize: none;
         }
     </style>
 </head>
@@ -174,17 +198,15 @@
     <section id="home" class="active">
         <div class="hero-box">
             <h1>SampSave</h1>
-            <p>SampSave es una biblioteca de archivos de audio, perfecta para almacenar tus maquetas. Te permite comparar versiones anteriores de tus pistas, crear borradores para tu EP y una sección de guarda notas a BPM en sucesión...</p>
+            <p>Tu biblioteca personal de maquetas. Guarda versiones, reproduce tus avances y descarga tus pistas en cualquier momento.</p>
             
-            <div class="github-link" onclick="window.open('https://github.com/guille-gga/SampSave', '_blank')">
+            <div class="github-link" onclick="window.open('https://github.com/guille-gga', '_blank')">
                 <i class="fab fa-github"></i> Ver repositorio en GitHub
             </div>
 
             <div class="btn-grid">
-                <button>¿CÓMO USARLO?</button>
-                <button>Ayuda</button>
-                <button>Contacto</button>
-                <button>Ver README</button>
+                <button onclick="navTo('library')">MI LIBRERÍA</button>
+                <button onclick="navTo('add-audio')">NUEVO AUDIO</button>
             </div>
         </div>
     </section>
@@ -206,21 +228,21 @@
         </div>
 
         <div class="upload-area" onclick="document.getElementById('file-input').click()">
-            <i class="fas fa-file-audio" style="font-size: 40px;"></i>
-            <p id="file-status">Poder subir un nuevo audio WAV o MP3</p>
+            <i class="fas fa-file-audio" style="font-size: 40px; color: var(--accent);"></i>
+            <p id="file-status">Haz clic para elegir un WAV o MP3</p>
             <input type="file" id="file-input" hidden accept=".mp3,.wav" onchange="checkFile()">
         </div>
 
         <div id="meta-fields" style="display: none;">
             <div class="input-group">
-                <input type="text" id="proj-name" placeholder="Nombre del proyecto">
+                <input type="text" id="proj-name" placeholder="Nombre del proyecto (ej: 'Beat Verano')">
             </div>
             <div class="input-group">
-                <input type="text" id="proj-version" placeholder="Versión (Ej: V.1)">
+                <input type="text" id="proj-version" placeholder="Versión (Ej: V.1 Final)">
             </div>
         </div>
 
-        <button id="btn-guardar" onclick="saveProject()">Guardar</button>
+        <button id="btn-guardar" disabled onclick="saveProject()">Guardar en Librería</button>
     </section>
 
     <section id="project-details">
@@ -229,28 +251,36 @@
             <h2 id="detail-title">Nombre Proyecto</h2>
         </div>
 
-        <h3>Última versión:</h3>
-        <div class="audio-player">
-            <span id="detail-version">V.1</span> | <i class="fas fa-play"></i> Reproducir
+        <h3>Versión: <span id="detail-version" style="color: var(--accent);">V.1</span></h3>
+        
+        <div class="audio-player-container">
+            <p id="detail-filename" style="font-size: 0.8rem; color: var(--text-dim); margin-bottom: 10px;"></p>
+            <audio id="main-player" controls></audio>
         </div>
 
-        <button style="margin: 15px 0;" onclick="navTo('add-audio')">Subir nueva versión</button>
+        <div class="action-buttons">
+            <button id="btn-descargar" class="btn-download">
+                <i class="fas fa-download"></i> Descargar Pista
+            </button>
+            <button onclick="deleteCurrentProject()" class="btn-delete">
+                <i class="fas fa-trash"></i>
+            </button>
+        </div>
 
         <h3>Notas / Letras</h3>
-        <textarea placeholder="Escribe aquí tus notas a compás o letras..."></textarea>
+        <textarea id="detail-notes" placeholder="Escribe aquí notas sobre el BPM, la mezcla o letras..."></textarea>
     </section>
 
     <script>
-        let db = []; // "Base de datos" temporal
+        let db = []; // Base de datos temporal en memoria
+        let currentProjectIndex = null;
 
         function navTo(sectionId) {
-            // Ocultar todas las secciones
             document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-            // Mostrar la seleccionada
             document.getElementById(sectionId).classList.add('active');
 
-            // Lógica instrucciones rojo: Ocultar nav superior en "añadir" y "detalles"
             const topNav = document.getElementById('top-nav');
+            // Ocultar nav en pantallas de detalle o subida para evitar distracciones
             if(sectionId === 'add-audio' || sectionId === 'project-details') {
                 topNav.style.visibility = 'hidden';
             } else {
@@ -264,7 +294,7 @@
             const fileInput = document.getElementById('file-input');
             const btn = document.getElementById('btn-guardar');
             if(fileInput.files.length > 0) {
-                document.getElementById('file-status').innerText = "Archivo: " + fileInput.files[0].name;
+                document.getElementById('file-status').innerText = "Seleccionado: " + fileInput.files[0].name;
                 document.getElementById('meta-fields').style.display = 'block';
                 btn.classList.add('ready');
                 btn.disabled = false;
@@ -274,40 +304,99 @@
         function saveProject() {
             const name = document.getElementById('proj-name').value;
             const version = document.getElementById('proj-version').value;
+            const fileInput = document.getElementById('file-input');
             
-            if(name && version) {
-                db.push({ name, version });
-                // Limpiar campos
+            if(name && version && fileInput.files[0]) {
+                const file = fileInput.files[0];
+                
+                const newProject = {
+                    name: name,
+                    version: version,
+                    fileName: file.name,
+                    // Creamos la URL mágica que permite reproducir y descargar
+                    fileUrl: URL.createObjectURL(file),
+                    notes: ""
+                };
+
+                db.push(newProject);
+                
+                // Resetear formulario
                 document.getElementById('proj-name').value = '';
                 document.getElementById('proj-version').value = '';
                 document.getElementById('file-input').value = '';
+                document.getElementById('meta-fields').style.display = 'none';
+                document.getElementById('file-status').innerText = "Haz clic para elegir un WAV o MP3";
+                
                 navTo('library');
             } else {
-                alert("Por favor rellena el nombre y versión");
+                alert("Por favor rellena todos los campos");
             }
         }
 
         function renderLibrary() {
             const list = document.getElementById('project-list');
-            if(db.length === 0) return;
+            
+            if(db.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-plus" style="font-size: 40px; margin-bottom: 10px;"></i>
+                        <p>Todavía no has añadido nada a tu librería</p>
+                    </div>`;
+                return;
+            }
 
             list.innerHTML = db.map((proj, index) => `
                 <div class="project-card">
                     <div>
                         <strong>${proj.name}</strong><br>
-                        <small>${proj.version}</small>
+                        <small style="color: var(--text-dim)">${proj.version}</small>
                     </div>
-                    <button onclick="openProject(${index})">Abrir</button>
+                    <button onclick="openProject(${index})" style="background: var(--accent)">ABRIR</button>
                 </div>
             `).join('');
         }
 
         function openProject(index) {
+            currentProjectIndex = index;
             const proj = db[index];
+            const player = document.getElementById('main-player');
+            const downloadBtn = document.getElementById('btn-descargar');
+
+            // Cargar datos en la vista de detalle
             document.getElementById('detail-title').innerText = proj.name;
             document.getElementById('detail-version').innerText = proj.version;
+            document.getElementById('detail-filename').innerText = "Archivo: " + proj.fileName;
+            document.getElementById('detail-notes').value = proj.notes || "";
+
+            // Configurar Audio
+            player.src = proj.fileUrl;
+
+            // Configurar Descarga
+            downloadBtn.onclick = () => {
+                const a = document.createElement('a');
+                a.href = proj.fileUrl;
+                a.download = proj.fileName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            };
+
             navTo('project-details');
         }
+
+        function deleteCurrentProject() {
+            if(confirm("¿Seguro que quieres borrar esta pista?")) {
+                db.splice(currentProjectIndex, 1);
+                navTo('library');
+            }
+        }
+
+        // Guardar notas automáticamente al escribir
+        document.getElementById('detail-notes').addEventListener('input', (e) => {
+            if(currentProjectIndex !== null) {
+                db[currentProjectIndex].notes = e.target.value;
+            }
+        });
     </script>
 </body>
 </html>
