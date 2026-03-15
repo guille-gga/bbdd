@@ -35,7 +35,10 @@ en el archivo `Dokerfile`
 Porque Docker da acceso a la base de datos que pongas en MYSQL_DATABASE, como los test.
 
 9. Dale todos los permisos (lectura y escritura) al usuario user a todas la tablas de la base de datos test1. ¿Que comandos usaste para esto?
+
 10.Demuestra que el usuario user puede tanto leer* como escribir nuevos datos en la base de datos test1 tras el cambio, haz un screenshot en el que lo demuestres y adjuntalo a continuacion.
+
 11.Crea un usuario llamado dev, con permisos solo de lectura en messageboard, y de lectura y escritura en movies, ¿que comandos usaste para esto?
+
 12.Demuestra que el usuario dev puede leer pero no le deja editar en la base de datos messageboard y que puede tanto leer como escribir en movies, haz un screenshot en el que lo demuestres y adjuntalo a continuacion.
 
